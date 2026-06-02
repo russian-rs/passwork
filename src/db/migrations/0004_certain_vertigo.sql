@@ -1,0 +1,1 @@
+ALTER TABLE "credentials" ADD COLUMN "dominant_color" text;

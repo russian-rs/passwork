@@ -1,0 +1,1 @@
+ALTER TABLE "credentials" ADD COLUMN "custom_icon" text;
