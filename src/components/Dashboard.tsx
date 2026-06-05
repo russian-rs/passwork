@@ -8,7 +8,8 @@ import { ViewCredentialModal } from "./ViewCredentialModal";
 import { CreateCategoryModal } from "./CreateCategoryModal";
 import { EditCategoryModal } from "./EditCategoryModal";
 import { CreateSecretModal } from "./CreateSecretModal";
-import { Share2, Menu } from "lucide-react";
+import { Share2, Menu, Settings } from "lucide-react";
+import Link from "next/link";
 import { useTranslation } from "@/i18n/I18nProvider";
 
 type Credential = {
@@ -32,12 +33,14 @@ export function Dashboard({
   credentials, 
   categories,
   userName,
-  userEmail
+  userEmail,
+  isAdmin = false
 }: { 
   credentials: Credential[];
   categories: Category[];
   userName?: string | null;
   userEmail?: string | null;
+  isAdmin?: boolean;
 }) {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
@@ -106,12 +109,14 @@ export function Dashboard({
           <div>
             <div className="flex items-center justify-between mb-4 px-2">
               <h2 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">{t("categories")}</h2>
-              <button 
-                onClick={() => setIsCategoryOpen(true)}
-                className="text-zinc-400 hover:text-white transition-colors p-1"
-              >
-                <Plus className="w-5 h-5" />
-              </button>
+              {isAdmin && (
+                <button 
+                  onClick={() => setIsCategoryOpen(true)}
+                  className="text-zinc-400 hover:text-white transition-colors p-1"
+                >
+                  <Plus className="w-5 h-5" />
+                </button>
+              )}
             </div>
             <ul className="space-y-1.5">
               {categories.map(cat => (
@@ -146,20 +151,22 @@ export function Dashboard({
                       {cat.name}
                     </span>
                   </button>
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setEditingCategory(cat);
-                    }}
-                    className={`px-3 flex items-center justify-center transition-colors ${
-                      activeCategory === cat.id
-                        ? "text-zinc-400 hover:text-white"
-                        : "text-transparent group-hover:text-zinc-400 hover:!text-white"
-                    }`}
-                    title={t("editCategory")}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
-                  </button>
+                  {isAdmin && (
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditingCategory(cat);
+                      }}
+                      className={`px-3 flex items-center justify-center transition-colors ${
+                        activeCategory === cat.id
+                          ? "text-zinc-400 hover:text-white"
+                          : "text-transparent group-hover:text-zinc-400 hover:!text-white"
+                      }`}
+                      title={t("editCategory")}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                    </button>
+                  )}
                 </li>
               ))}
               {categories.length === 0 && (
@@ -180,6 +187,19 @@ export function Dashboard({
             </button>
           ))}
         </div>
+        
+        {isAdmin && (
+          <div className="p-2 border-t border-white/5">
+            <Link 
+              href="/settings"
+              className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl transition-all font-medium text-sm text-zinc-400 hover:text-white hover:bg-white/5"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <Settings className="w-5 h-5" />
+              {t("settings")}
+            </Link>
+          </div>
+        )}
 
         <div className="p-6 border-t border-white/5 flex items-center gap-4">
           <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-lg font-bold shadow-lg flex-shrink-0">
@@ -242,13 +262,15 @@ export function Dashboard({
         {/* Credentials Grid */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 flex flex-col">
           <div className="mb-6 md:mb-8 flex flex-col items-start gap-4 md:gap-6 flex-shrink-0">
-            <button 
-              onClick={() => setIsCreateOpen(true)}
-              className="flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-400 hover:via-purple-400 hover:to-pink-400 text-white px-4 py-2.5 sm:px-6 sm:py-3 rounded-xl font-semibold text-sm sm:text-base transition-all active:scale-95 shadow-xl shadow-purple-500/25 border border-white/10 w-full sm:w-auto"
-            >
-              <Plus className="w-5 h-5" />
-              {t("addPassword")}
-            </button>
+            {isAdmin && (
+              <button 
+                onClick={() => setIsCreateOpen(true)}
+                className="flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-400 hover:via-purple-400 hover:to-pink-400 text-white px-4 py-2.5 sm:px-6 sm:py-3 rounded-xl font-semibold text-sm sm:text-base transition-all active:scale-95 shadow-xl shadow-purple-500/25 border border-white/10 w-full sm:w-auto"
+              >
+                <Plus className="w-5 h-5" />
+                {t("addPassword")}
+              </button>
+            )}
             <div className="flex items-center gap-3">
               {currentCategory ? (
                 <>
@@ -281,17 +303,21 @@ export function Dashboard({
               <h3 className="text-xl font-medium text-white mb-2">
                 {activeCategory ? t("emptyCategory") : t("emptyVault")}
               </h3>
-              <p className="text-zinc-400 max-w-sm">
-                {activeCategory 
-                  ? t("addToCategory") 
-                  : t("addFirstPassword")}
-              </p>
-              <button 
-                onClick={() => setIsCreateOpen(true)}
-                className="mt-6 bg-white/10 hover:bg-white/15 text-white px-6 py-2.5 rounded-full text-sm font-medium transition-colors"
-              >
-                {t("addItem")}
-              </button>
+              {isAdmin && (
+                <>
+                  <p className="text-zinc-400 max-w-sm">
+                    {activeCategory 
+                      ? t("addToCategory") 
+                      : t("addFirstPassword")}
+                  </p>
+                  <button 
+                    onClick={() => setIsCreateOpen(true)}
+                    className="mt-6 bg-white/10 hover:bg-white/15 text-white px-6 py-2.5 rounded-full text-sm font-medium transition-colors"
+                  >
+                    {t("addItem")}
+                  </button>
+                </>
+              )}
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
@@ -397,6 +423,7 @@ export function Dashboard({
         isOpen={!!selectedCredentialId} 
         onClose={() => setSelectedCredentialId(null)} 
         categories={categories}
+        isAdmin={isAdmin}
       />
       <CreateCategoryModal
         isOpen={isCategoryOpen}

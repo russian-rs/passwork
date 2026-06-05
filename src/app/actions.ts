@@ -1,11 +1,11 @@
 "use server";
 
 import { db } from "@/db";
-import { credentials, categories, sharedSecrets } from "@/db/schema";
+import { credentials, categories, sharedSecrets, admins } from "@/db/schema";
 import { encrypt, decrypt } from "@/lib/encryption";
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
-import { eq } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
 import { getAverageColor } from "fast-average-color-node";
 import { TOTP } from "otpauth";
 
@@ -25,8 +25,68 @@ async function verifyAuth() {
   return session;
 }
 
-export async function createCredential(formData: FormData) {
+export async function verifyAdmin() {
   const session = await verifyAuth();
+  const rawUserId = (session.user as any)?.id;
+  if (!rawUserId) {
+    throw new Error("Unauthorized");
+  }
+  
+  const userId = String(rawUserId);
+  
+  const allAdmins = await db.select().from(admins).limit(1);
+  if (allAdmins.length === 0) {
+    let finalAuthentikId = userId;
+    if (session.user?.email) {
+      try {
+        const authentikUrl = process.env.AUTHENTIK_URL?.replace(/\/$/, "");
+        const apiKey = process.env.AUTHENTIK_API_KEY;
+        if (authentikUrl && apiKey) {
+          const res = await fetch(`${authentikUrl}/api/v3/core/users/?search=${encodeURIComponent(session.user.email)}`, {
+            headers: { Authorization: `Bearer ${apiKey}` },
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.results?.[0]) {
+              const u = data.results[0];
+              finalAuthentikId = String(u.uid || u.pk || u.id);
+            }
+          }
+        }
+      } catch (e) {
+        console.error("Failed to fetch real uid for bootstrap", e);
+      }
+    }
+
+    await db.insert(admins).values({
+      authentikId: finalAuthentikId,
+      username: session.user?.name || session.user?.email || "Admin",
+      email: session.user?.email || null,
+      addedBy: "system",
+    });
+    return session;
+  }
+  
+  let admin = await db.query.admins.findFirst({
+    where: session.user?.email
+      ? or(
+          eq(admins.authentikId, userId),
+          eq(admins.email, session.user.email)
+        )
+      : eq(admins.authentikId, userId),
+  });
+  
+
+  
+  if (!admin) {
+    throw new Error("Forbidden: Admin access required");
+  }
+  
+  return session;
+}
+
+export async function createCredential(formData: FormData) {
+  const session = await verifyAdmin();
   const userName = session.user?.name || session.user?.email || "Unknown User";
   
   const title = formData.get("title") as string;
@@ -117,7 +177,7 @@ export async function getCredentialDecrypted(id: string) {
 }
 
 export async function updateCredential(id: string, formData: FormData) {
-  const session = await verifyAuth();
+  const session = await verifyAdmin();
   const userName = session.user?.name || session.user?.email || "Unknown User";
   
   const title = formData.get("title") as string;
@@ -222,7 +282,7 @@ export async function getCurrentTotp(id: string) {
 }
 
 export async function createCategory(formData: FormData) {
-  await verifyAuth();
+  await verifyAdmin();
   
   const name = formData.get("name") as string;
   const color = formData.get("color") as string;
@@ -238,7 +298,7 @@ export async function createCategory(formData: FormData) {
 }
 
 export async function updateCategoryColor(id: string, formData: FormData) {
-  await verifyAuth();
+  await verifyAdmin();
   const color = formData.get("color") as string;
   if (!id || !color) return;
 
@@ -250,7 +310,7 @@ export async function updateCategoryColor(id: string, formData: FormData) {
 }
 
 export async function deleteCategory(id: string) {
-  await verifyAuth();
+  await verifyAdmin();
   if (!id) return;
 
   // Since categoryId on credentials has ON DELETE SET NULL, 
@@ -302,7 +362,7 @@ export async function revealSharedSecret(id: string) {
 }
 
 export async function deleteCredential(id: string) {
-  await verifyAuth();
+  await verifyAdmin();
   if (!id) return;
   await db.delete(credentials).where(eq(credentials.id, id));
   revalidatePath("/");

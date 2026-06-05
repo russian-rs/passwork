@@ -32,3 +32,12 @@ export const sharedSecrets = pgTable("shared_secrets", {
   createdBy: text("created_by"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+export const admins = pgTable("admins", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  authentikId: text("authentik_id").notNull().unique(),
+  username: text("username").notNull(),
+  email: text("email"),
+  addedBy: text("added_by"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});

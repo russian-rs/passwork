@@ -44,11 +44,13 @@ export function ViewCredentialModal({
   isOpen,
   onClose,
   categories,
+  isAdmin = false,
 }: {
   credentialId: string | null;
   isOpen: boolean;
   onClose: () => void;
   categories: { id: string; name: string }[];
+  isAdmin?: boolean;
 }) {
   const [data, setData] = useState<DecryptedCredential | null>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -228,7 +230,7 @@ export function ViewCredentialModal({
             </h2>
           </div>
           <div className="flex items-center gap-2">
-            {data && !loading && (
+            {isAdmin && data && !loading && (
               <button
                 type="button"
                 onClick={() => setIsEditing(!isEditing)}

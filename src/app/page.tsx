@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { credentials, categories } from "@/db/schema";
 import { asc } from "drizzle-orm";
 import { Dashboard } from "@/components/Dashboard";
+import { verifyAdmin } from "@/app/actions";
 
 export default async function Home() {
   const session = await auth();
@@ -36,12 +37,21 @@ export default async function Home() {
     hasTotp: !!c.totpSecretEncrypted,
   }));
 
+  let isAdmin = false;
+  try {
+    await verifyAdmin();
+    isAdmin = true;
+  } catch (e) {
+    // User is not an admin, which is fine
+  }
+
   return (
     <Dashboard 
       credentials={credentialsWithTotpFlag}
       categories={allCategories}
       userName={session.user?.name}
       userEmail={session.user?.email}
+      isAdmin={isAdmin}
     />
   );
 }

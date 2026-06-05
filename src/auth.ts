@@ -6,7 +6,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     Authentik({
       clientId: process.env.AUTHENTIK_CLIENT_ID!,
       clientSecret: process.env.AUTHENTIK_CLIENT_SECRET!,
-      issuer: process.env.AUTHENTIK_ISSUER!,
+      issuer: `${process.env.AUTHENTIK_URL?.replace(/\/$/, "")}/application/o/${process.env.AUTHENTIK_CLIENT_ID}/`,
       authorization: { params: { scope: "openid email profile offline_access" } },
     }),
   ],
@@ -36,7 +36,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       // Access token has expired, try to update it
       try {
-        const issuer = process.env.AUTHENTIK_ISSUER?.replace(/\/$/, "");
+        const issuer = `${process.env.AUTHENTIK_URL?.replace(/\/$/, "")}/application/o/${process.env.AUTHENTIK_CLIENT_ID}`;
         const wellKnownRes = await fetch(`${issuer}/.well-known/openid-configuration`);
         const wellKnown = await wellKnownRes.json();
         

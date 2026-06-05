@@ -43,6 +43,13 @@
       "when": 1780354521052,
       "tag": "0005_lush_hex",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1780696290675,
+      "tag": "0006_free_donald_blake",
+      "breakpoints": true
     }
   ]
 }
