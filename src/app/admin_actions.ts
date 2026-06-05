@@ -80,7 +80,10 @@ export async function removeAdmin(id: string) {
   
   if (!admin) return;
   
-  if (String(admin.authentikId) === String((session.user as any)?.id)) {
+  if (
+    (session.user?.email && admin.email === session.user.email) ||
+    String(admin.authentikId) === String((session.user as any)?.id)
+  ) {
     throw new Error("Cannot remove yourself");
   }
   

@@ -36,7 +36,15 @@ export function AccessDenied() {
   );
 }
 
-export function AdminManager({ initialAdmins }: { initialAdmins: any[] }) {
+export function AdminManager({ 
+  initialAdmins,
+  currentUserEmail,
+  currentUserId
+}: { 
+  initialAdmins: any[],
+  currentUserEmail: string | null,
+  currentUserId: string | null
+}) {
   const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<any[]>([]);
@@ -158,13 +166,20 @@ export function AdminManager({ initialAdmins }: { initialAdmins: any[] }) {
                   <div className="text-[10px] text-zinc-600 mt-0.5">{t("addedBy")} {admin.addedBy}</div>
                 </div>
               </div>
-              <button
+              {((currentUserEmail && admin.email === currentUserEmail) || 
+                (currentUserId && String(admin.authentikId) === currentUserId)) ? (
+                <div className="text-xs font-medium text-zinc-500 px-3 py-1 bg-white/5 rounded-lg border border-white/5 uppercase tracking-wider">
+                  {t("you")}
+                </div>
+              ) : (
+                <button
                   onClick={() => setAdminToDelete(admin.id)}
                   className="text-red-400 hover:text-red-300 hover:bg-red-400/10 p-2.5 rounded-lg transition-colors"
                   title={t("removeAdmin")}
                 >
                   <Trash2 className="w-5 h-5" />
                 </button>
+              )}
             </div>
           ))}
           

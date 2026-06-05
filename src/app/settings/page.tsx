@@ -11,9 +11,14 @@ export const metadata = {
 
 export default async function SettingsPage() {
   let isAdmin = false;
+  let currentUserEmail: string | null = null;
+  let currentUserId: string | null = null;
+  
   try {
-    await verifyAdmin();
+    const session = await verifyAdmin();
     isAdmin = true;
+    currentUserEmail = session?.user?.email || null;
+    currentUserId = session?.user?.id || null;
   } catch (e) {
     isAdmin = false;
   }
@@ -52,7 +57,11 @@ export default async function SettingsPage() {
             
 
             
-            <AdminManager initialAdmins={currentAdmins} />
+            <AdminManager 
+              initialAdmins={currentAdmins} 
+              currentUserEmail={currentUserEmail}
+              currentUserId={currentUserId}
+            />
           </div>
         </div>
       </div>

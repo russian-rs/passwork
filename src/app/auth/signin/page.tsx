@@ -14,8 +14,8 @@ export default function SignInPage() {
       <div className="absolute top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-500/10 rounded-full blur-[100px] opacity-50 pointer-events-none" />
       
       <div className="glass-card w-full max-w-md p-10 relative z-10 flex flex-col items-center text-center">
-        <div className="w-20 h-20 bg-primary/20 rounded-3xl flex items-center justify-center mb-8 shadow-lg shadow-primary/20 border border-primary/30">
-          <Shield className="w-10 h-10 text-primary" />
+        <div className="w-24 h-24 flex items-center justify-center mb-6">
+          <img src="/passwork.png" alt="Passwork Logo" className="w-full h-full object-contain drop-shadow-2xl" />
         </div>
         
         <h1 className="text-5xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-br from-indigo-400 via-fuchsia-500 to-orange-500 mb-3 pb-1">

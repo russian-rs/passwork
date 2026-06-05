@@ -80,8 +80,9 @@ export function Dashboard({
       
       {/* Sidebar */}
       <aside className={`w-80 glass border-r flex flex-col fixed md:relative z-50 md:z-0 h-[100dvh] transition-transform duration-300 ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}>
-        <div className="p-6 border-b border-white/5">
-          <h1 className="text-3xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-br from-indigo-400 via-fuchsia-500 to-orange-500 pb-1">
+        <div className="p-6 border-b border-white/5 flex items-center gap-3">
+          <img src="/passwork.png" alt="Passwork Logo" className="w-8 h-8 object-contain" />
+          <h1 className="text-3xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-br from-indigo-400 via-fuchsia-500 to-orange-500 py-1">
             Passwork
           </h1>
         </div>

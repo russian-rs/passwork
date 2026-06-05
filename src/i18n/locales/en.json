@@ -119,5 +119,6 @@
   "noAdminsConfigured": "No admins configured. The first user to perform an action will be automatically made an admin.",
   "accessDenied": "Access Denied",
   "accessDeniedDesc": "You do not have permission to access the settings. Only administrators can configure the team vault.",
-  "returnToVault": "Return to Vault"
+  "returnToVault": "Return to Vault",
+  "you": "You"
 }

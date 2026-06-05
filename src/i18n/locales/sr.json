@@ -119,5 +119,6 @@
   "noAdminsConfigured": "Nema konfigurisanih administratora. Prvi korisnik koji izvrši akciju će automatski postati administrator.",
   "accessDenied": "Pristup odbijen",
   "accessDeniedDesc": "Nemate dozvolu za pristup podešavanjima. Samo administratori mogu da upravljaju timskim trezorom.",
-  "returnToVault": "Nazad u trezor"
+  "returnToVault": "Nazad u trezor",
+  "you": "Vi"
 }
