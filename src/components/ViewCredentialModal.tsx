@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { X, Shield, Copy, Check, ExternalLink, RefreshCw, Edit2, Save, KeyRound, Smartphone, Globe, FileText, Dices, Eye, EyeOff } from "lucide-react";
-import { getCredentialDecrypted, updateCredential, getCurrentTotp } from "@/app/actions";
+import { getCredentialDecrypted, updateCredential, getCurrentTotp, deleteCredential } from "@/app/actions";
 import { generatePassword } from "@/lib/utils";
 import { useFormStatus } from "react-dom";
 import { useTranslation } from "@/i18n/I18nProvider";
@@ -65,6 +65,8 @@ export function ViewCredentialModal({
   const [password, setPassword] = useState("");
   const [passwordTouched, setPasswordTouched] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteConfirmTitle, setDeleteConfirmTitle] = useState("");
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -126,6 +128,8 @@ export function ViewCredentialModal({
     } else {
       setData(null);
       setIsEditing(false);
+      setIsDeleting(false);
+      setDeleteConfirmTitle("");
       setTotpCode(null);
       setShowPassword(false);
     }
@@ -258,7 +262,44 @@ export function ViewCredentialModal({
               </div>
             </div>
           ) : null}
-          {isEditing && data ? (
+          {isDeleting && data ? (
+            <div className="space-y-4">
+              <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-6 text-center">
+                <p className="text-red-400 font-medium mb-2 text-lg">{t("deleteConfirmText")}</p>
+                <p className="text-sm text-zinc-400 mb-6">{t("typeNameToDelete")} <span className="font-bold text-white select-all">{data.title}</span></p>
+                <input 
+                  type="text"
+                  value={deleteConfirmTitle}
+                  onChange={(e) => setDeleteConfirmTitle(e.target.value)}
+                  className="w-full bg-black/50 border border-red-500/30 rounded-xl px-4 py-3 text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-red-500/50 mb-6 text-center"
+                  placeholder={data.title}
+                />
+                <div className="flex gap-3 justify-center">
+                  <button 
+                    type="button" 
+                    onClick={() => {
+                      setIsDeleting(false);
+                      setDeleteConfirmTitle("");
+                    }}
+                    className="px-6 py-2.5 text-sm font-medium text-zinc-300 hover:text-white transition-colors"
+                  >
+                    {t("cancel")}
+                  </button>
+                  <button 
+                    type="button"
+                    disabled={deleteConfirmTitle !== data.title}
+                    onClick={async () => {
+                      await deleteCredential(data.id);
+                      onClose();
+                    }}
+                    className="px-6 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-red-500 shadow-lg shadow-red-500/20"
+                  >
+                    {t("delete")}
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : isEditing && data ? (
             <form 
               ref={formRef}
               action={async (formData) => {
@@ -429,7 +470,14 @@ export function ViewCredentialModal({
                 </div>
               </div>
 
-              <div className="pt-4 flex justify-end">
+              <div className="pt-6 mt-4 border-t border-white/10 flex justify-between items-center">
+                <button 
+                  type="button" 
+                  onClick={() => setIsDeleting(true)} 
+                  className="text-red-400 hover:text-red-300 transition-colors text-sm font-medium px-2 py-2"
+                >
+                  {t("deleteItem")}
+                </button>
                 <SubmitEditButton disabledError={totpError || urlError || title.trim() === "" || password === ""} />
               </div>
             </form>

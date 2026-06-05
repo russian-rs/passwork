@@ -300,3 +300,10 @@ export async function revealSharedSecret(id: string) {
   
   return decrypted;
 }
+
+export async function deleteCredential(id: string) {
+  await verifyAuth();
+  if (!id) return;
+  await db.delete(credentials).where(eq(credentials.id, id));
+  revalidatePath("/");
+}

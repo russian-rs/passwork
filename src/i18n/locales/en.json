@@ -98,5 +98,8 @@
 
   "saveSecurelyDesc": "Please treat the provided information with caution. Save it securely, as it will no longer be available via this link.",
   "clickToReveal": "Click to reveal",
-  "copyToClipboard": "Copy to clipboard"
+  "copyToClipboard": "Copy to clipboard",
+  "deleteItem": "Delete Item",
+  "deleteConfirmText": "Are you sure you want to delete this item? This action cannot be undone.",
+  "typeNameToDelete": "Please type the name to confirm:"
 }

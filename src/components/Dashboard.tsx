@@ -240,8 +240,8 @@ export function Dashboard({
         </header>
 
         {/* Credentials Grid */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8">
-          <div className="mb-6 md:mb-8 flex flex-col items-start gap-4 md:gap-6">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 flex flex-col">
+          <div className="mb-6 md:mb-8 flex flex-col items-start gap-4 md:gap-6 flex-shrink-0">
             <button 
               onClick={() => setIsCreateOpen(true)}
               className="flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-400 hover:via-purple-400 hover:to-pink-400 text-white px-4 py-2.5 sm:px-6 sm:py-3 rounded-xl font-semibold text-sm sm:text-base transition-all active:scale-95 shadow-xl shadow-purple-500/25 border border-white/10 w-full sm:w-auto"
@@ -274,7 +274,7 @@ export function Dashboard({
           </div>
 
           {displayedCredentials.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-center">
+            <div className="flex-1 flex flex-col items-center justify-center text-center pb-10">
               <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6 border border-white/10">
                 <Shield className="w-10 h-10 text-zinc-600" />
               </div>
